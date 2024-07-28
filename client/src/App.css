@@ -1,0 +1,38 @@
+body {
+  background: #282c34;
+}
+
+.App {
+  text-align: center;
+  color: white;
+  height: 100vh;
+}
+
+.App-header {
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+img {
+  width: 300px;
+}
+
+table, th, td {
+  border: 1px solid;
+}
+
+th, td {
+  padding: 30px;
+}
+
+th {
+  font-weight: bold;
+}
+
+.table-container {
+  display: flex;
+  justify-content: center;
+}
