@@ -4,10 +4,8 @@ const TableComponent = ({ data }) => {
     const headers = Object.values(data[0]).map(item => item.displayName)
     const rows = data.map((item) => Object.values(item).map(item => item.value));
 
-    console.log(headers, rows)
-
     return (
-        <table>
+        <table cellspacing="0">
             <thead>
                 <tr>
                     {headers.map((header) => (

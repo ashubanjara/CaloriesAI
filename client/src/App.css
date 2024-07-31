@@ -6,6 +6,9 @@ body {
   text-align: center;
   color: white;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .App-header {
@@ -21,7 +24,7 @@ img {
 }
 
 table, th, td {
-  border: 1px solid;
+  border: 1px solid rgb(255, 255, 255, 0.5);
 }
 
 th, td {
@@ -35,4 +38,66 @@ th {
 .table-container {
   display: flex;
   justify-content: center;
+}
+
+.text-prompt-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.image-upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+input {
+  margin: 20px 0;
+}
+
+img {
+  margin-top: 15px;
+}
+
+loader {
+  display: block;
+}
+
+textarea {
+  width: 300px;
+  height: 150px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  font-size: 16px;
+  resize: none;
+  margin: 20px 0;
+}
+
+.tabs-container {
+  display: flex;
+  justify-content: space-between;
+  width: 50%;
+  max-width: 300rem;
+}
+
+.tabs-container > div {
+  border-bottom: 3px solid rgba(0,0,0,0);
+  width: 200px;
+  font-size: 20px;
+}
+
+.tabs-container > div:hover {
+  border-bottom: 3px solid pink;
+  background-color: green;
+  cursor: pointer;
+}
+
+.active {
+  background-color: darkgoldenrod;
 }

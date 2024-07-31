@@ -81,7 +81,7 @@ const getCalories = async (foodData) => {
     return foodCalories
 }
 
-router.post("/", upload.single("file"), async (req, res) => {
+router.post("/image-calories", upload.single("file"), async (req, res) => {
     const imageDescriptionData = await getImageDescription(req.file.path);
     const foodJSONStr = await descriptionToJSON(imageDescriptionData.generated_text);
     console.log(foodJSONStr.choices[0].message.content)
@@ -92,6 +92,18 @@ router.post("/", upload.single("file"), async (req, res) => {
         calories: calories
     });
     fs.unlinkSync(req.file.path);
+});
+
+router.post("/text-calories", async (req, res) => {
+    console.log(req.body)
+    const foodJSONStr = await descriptionToJSON(req.body.textPrompt);
+    console.log(foodJSONStr.choices[0].message.content)
+    const calories = await getCalories(JSON.parse(foodJSONStr.choices[0].message.content))
+    console.log(calories)
+    res.send({
+        description: req.body.textPrompt,
+        calories: calories
+    });
 });
 
 module.exports = router;

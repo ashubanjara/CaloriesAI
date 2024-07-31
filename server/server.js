@@ -7,7 +7,9 @@ const app = express();
 
 app.use(cors());
 
-app.use("/image-calories", imageCaloriesRouter);
+app.use(express.json());
+
+app.use("/", imageCaloriesRouter);
 
 app.listen(8080, () => {
     console.log("server listening on port 8080");
