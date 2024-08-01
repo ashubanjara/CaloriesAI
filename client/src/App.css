@@ -62,7 +62,7 @@ img {
   margin-top: 15px;
 }
 
-loader {
+.loader {
   display: block;
 }
 
@@ -90,6 +90,7 @@ textarea {
   border-bottom: 3px solid rgba(0,0,0,0);
   width: 200px;
   font-size: 20px;
+  margin-bottom: 2em;
 }
 
 .tabs-container > div:hover {

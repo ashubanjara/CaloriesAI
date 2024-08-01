@@ -74,8 +74,21 @@ const getCalories = async (foodData) => {
                     displayName: 'Total Calories',
                     value: response.data.items[0].calories*food.foodCount
                 },
+                carbohydrates: {
+                    displayName: "Carbohydrates (g)",
+                    value: response.data.items[0].carbohydrates_total_g*food.foodCount
+                },
+                protein: {
+                    displayName: "Protein (g)",
+                    value: response.data.items[0].protein_g*food.foodCount
+                },
+                fats: {
+                    displayName: "Fats (g)",
+                    value: response.data.items[0].fat_total_g*food.foodCount
+                }
             })
         }
+        console.log(response.data)
     }))
     console.log(foodCalories)
     return foodCalories

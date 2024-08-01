@@ -1,6 +1,7 @@
 import "./App.css";
 import { useState } from 'react';
 import AiAnalyzer from "./components/AiAnalyzer/AiAnalyzer"
+import RandomRecipe from "./components/RandomRecipe/RandomRecipe";
 
 function App() {
     const [currentSubpage, setCurrentSubpage] = useState('')
@@ -30,6 +31,7 @@ function App() {
             </div>
 
             {currentSubpage === "aiAnalyzer" && <AiAnalyzer/>}
+            {currentSubpage === "randomRecipe" && <RandomRecipe/>}
         </div>
     );
 }
