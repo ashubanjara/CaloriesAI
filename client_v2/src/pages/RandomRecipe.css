@@ -1,0 +1,28 @@
+.ingredients-list {
+    text-align: left;
+    max-width: 300px;
+}
+
+.steps-list {
+    text-align: left;
+    max-width: 300px;
+}
+
+button {
+    display: block;
+}
+
+.random-recipe-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.104);
+    border-radius: 2%;
+    padding: 1em;
+    margin-top: 1em;
+}
+
+.lists-container {
+    display: flex;
+    justify-content: center;
+}

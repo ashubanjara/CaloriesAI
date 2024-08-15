@@ -9,8 +9,6 @@ const randomRecipe = async () => {
     try {
         apiKey = dotenv.parsed.SPOONTACULAR_API_KEY
         response = await axios.get(`https://api.spoonacular.com/recipes/random?apiKey=${apiKey}&number=1`)
-
-        console.log(response)
     
         return response.data.recipes[0]
     }

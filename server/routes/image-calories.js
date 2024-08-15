@@ -5,6 +5,7 @@ const multer = require("multer");
 const axios = require("axios");
 const fs = require("fs");
 const OpenAI = require("openai");
+const authenticateToken = require("../middlewares/authentication");
 
 const openai = new OpenAI(dotenv.parsed.OPENAI_API_KEY);
 
@@ -49,74 +50,87 @@ const descriptionToJSON = async (description) => {
         model: "gpt-4o-mini",
     });
 
-    return completion
+    return completion;
 };
 
 const getCalories = async (foodData) => {
-    const foodCalories = []
-    await Promise.all(foodData.map(async food => {
-        const response = await axios.get(`https://api.calorieninjas.com/v1/nutrition/?query=${food.foodName}`, {
-            headers: {
-              'X-Api-Key': dotenv.parsed.CALORIENINJAS_API_KEY
-            }
-        })
-        if(response.data.items.length > 0) {
-            foodCalories.push({
-                food: {
-                    displayName: 'Food',
-                    value: food.foodName
-                },
-                foodCount: {
-                    displayName: 'Food Count',
-                    value: food.foodCount
-                }, 
-                foodCalories: {
-                    displayName: 'Total Calories',
-                    value: response.data.items[0].calories*food.foodCount
-                },
-                carbohydrates: {
-                    displayName: "Carbohydrates (g)",
-                    value: response.data.items[0].carbohydrates_total_g*food.foodCount
-                },
-                protein: {
-                    displayName: "Protein (g)",
-                    value: response.data.items[0].protein_g*food.foodCount
-                },
-                fats: {
-                    displayName: "Fats (g)",
-                    value: response.data.items[0].fat_total_g*food.foodCount
+    const foodCalories = [];
+    try {
+        await Promise.all(
+            foodData.map(async (food) => {
+                const response = await axios.get(`https://api.calorieninjas.com/v1/nutrition/?query=${food.foodName}`, {
+                    headers: {
+                        'X-Api-Key': dotenv.parsed.CALORIENINJAS_API_KEY,
+                    },
+                });
+                if (response.data.items.length > 0) {
+                    foodCalories.push({
+                        food: {
+                            displayName: 'Food',
+                            value: food.foodName,
+                        },
+                        foodCount: {
+                            displayName: 'Food Count',
+                            value: food.foodCount,
+                        },
+                        foodCalories: {
+                            displayName: 'Total Calories',
+                            value: response.data.items[0].calories * food.foodCount,
+                        },
+                        carbohydrates: {
+                            displayName: "Carbohydrates (g)",
+                            value: response.data.items[0].carbohydrates_total_g * food.foodCount,
+                        },
+                        protein: {
+                            displayName: "Protein (g)",
+                            value: response.data.items[0].protein_g * food.foodCount,
+                        },
+                        fats: {
+                            displayName: "Fats (g)",
+                            value: response.data.items[0].fat_total_g * food.foodCount,
+                        },
+                    });
                 }
             })
-        }
-        console.log(response.data)
-    }))
-    console.log(foodCalories)
-    return foodCalories
-}
+        );
+    } catch (e) {
+        console.error("Error fetching calories:", e.message);
+        throw new Error("Failed to fetch calorie information.");
+    }
+    return foodCalories;
+};
 
-router.post("/image-calories", upload.single("file"), async (req, res) => {
-    const imageDescriptionData = await getImageDescription(req.file.path);
-    const foodJSONStr = await descriptionToJSON(imageDescriptionData.generated_text);
-    console.log(foodJSONStr.choices[0].message.content)
-    const calories = await getCalories(JSON.parse(foodJSONStr.choices[0].message.content))
-    console.log(calories)
-    res.send({
-        description: imageDescriptionData.generated_text,
-        calories: calories
-    });
-    fs.unlinkSync(req.file.path);
+router.post("/image-calories", authenticateToken, upload.single("file"), async (req, res) => {
+    try {
+        const imageDescriptionData = await getImageDescription(req.file.path);
+        const foodJSONStr = await descriptionToJSON(imageDescriptionData.generated_text);
+        const calories = await getCalories(JSON.parse(foodJSONStr.choices[0].message.content));
+        res.send({
+            description: imageDescriptionData.generated_text,
+            calories: calories,
+        });
+        fs.unlinkSync(req.file.path);
+    } catch (e) {
+        console.error("Error processing image:", e.message);
+        res.status(500).send({ error: "Failed to process image." });
+        if (fs.existsSync(req.file?.path)) {
+            fs.unlinkSync(req.file.path);
+        }
+    }
 });
 
-router.post("/text-calories", async (req, res) => {
-    console.log(req.body)
-    const foodJSONStr = await descriptionToJSON(req.body.textPrompt);
-    console.log(foodJSONStr.choices[0].message.content)
-    const calories = await getCalories(JSON.parse(foodJSONStr.choices[0].message.content))
-    console.log(calories)
-    res.send({
-        description: req.body.textPrompt,
-        calories: calories
-    });
+router.post("/text-calories", authenticateToken, async (req, res) => {
+    try {
+        const foodJSONStr = await descriptionToJSON(req.body.textPrompt);
+        const calories = await getCalories(JSON.parse(foodJSONStr.choices[0].message.content));
+        res.send({
+            description: req.body.textPrompt,
+            calories: calories,
+        });
+    } catch (e) {
+        console.error("Error processing text prompt:", e.message);
+        res.status(500).send({ error: "Failed to process text prompt." });
+    }
 });
 
 module.exports = router;
