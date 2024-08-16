@@ -127,26 +127,6 @@ export default function AiAnalyzer() {
                         )}
                         {selectedKeys.has("image") && (
                             <DropZone isLoading={isLoading} onSubmit={upload}/>
-
-                            // <div className="flex flex-col items-center">
-                            //     {!isLoading && displayFile && (
-                            //         <Image
-                            //         width={300}
-                            //         alt="preview of user upload"
-                            //         src={displayFile}
-                            //         isBlurred
-                            //       />
-                            //     )}
-                            //     <input
-                            //         type="file"
-                            //         onChange={handleFileChange}
-                            //         accept="image/*"
-                            //         capture="environment"
-                            //     />
-                            //     <Button type="button" onClick={upload}>
-                            //         Upload
-                            //     </Button>
-                            // </div>
                         )}
                         {calorieData.description && (
                             <h4 className="mt-4">Description: {calorieData.description}</h4>

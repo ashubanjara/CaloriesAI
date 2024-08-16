@@ -5,12 +5,13 @@ const axios = require("axios");
 
 
 
-const randomRecipe = async () => {
+const randomRecipe = async (numRecipies) => {
     try {
+        console.log(numRecipies)
         apiKey = dotenv.parsed.SPOONTACULAR_API_KEY
-        response = await axios.get(`https://api.spoonacular.com/recipes/random?apiKey=${apiKey}&number=1`)
+        response = await axios.get(`https://api.spoonacular.com/recipes/random?apiKey=${apiKey}&number=${numRecipies}`)
     
-        return response.data.recipes[0]
+        return response.data.recipes
     }
     catch(e) {
         console.log(e)
@@ -18,11 +19,13 @@ const randomRecipe = async () => {
 }
 
 router.get("/random-recipe", async (req, res) => {
+    
+    let numRecipies = req.query.number
 
-    const recipe = await randomRecipe()
+    const recipes = await randomRecipe(numRecipies)
 
     res.send({
-        recipe
+        recipes
     });
 });
 

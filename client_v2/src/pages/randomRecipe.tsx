@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import "./RandomRecipe.css";
 import DefaultLayout from "@/layouts/default";
@@ -8,17 +8,43 @@ import { Card, CardBody } from "@nextui-org/card";
 import TinderCard from 'react-tinder-card';
 
 export default function RandomRecipe() {
-    const [recipe, setRecipe] = useState({});
+    const [loadedRecipes, setLoadedRecipes] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const getRandomRecipe = async () => {
+    const initRecipes = async () => {
+        setIsLoading(true);
+        const data = await loadRecipes(20)
+        setLoadedRecipes(data)
+        setIsLoading(false);
+    }
+
+    const loadRecipes = async (numRecipes) => {
         try {
-            const res = await axios.get("http://localhost:8080/random-recipe");
-
-            setRecipe(res.data.recipe);
+            const res = await axios.get(`http://localhost:8080/random-recipe?number=${numRecipes}`);
+            
+            return res.data.recipes
         } catch (e) {
             throw new Error(e);
         }
+        finally {
+        }
     };
+
+    const onCardLeftScreen = async (id) => {
+        const newLoadedRecipes = structuredClone(loadedRecipes)
+
+        if (loadedRecipes.length < 6) {
+            const data = await loadRecipes(19)
+            for (let i = 0; i < data.length; i++) {
+                newLoadedRecipes.unshift(data[i])
+            }
+        }
+
+        newLoadedRecipes.pop()
+
+        setLoadedRecipes(newLoadedRecipes)
+        console.log(id)
+      }
 
     const renderIngredients = (ingredients) => {
 
@@ -43,10 +69,11 @@ export default function RandomRecipe() {
 
     return (
         <DefaultLayout>
-            <Button onClick={getRandomRecipe}>Get Random Recipe</Button>
-            {Object.keys(recipe).length > 0 && (
-                <div className="max-w-lg mt-4">
-                    <TinderCard preventSwipe={['right', 'left']}>
+            <div className="flex flex-col justify-center items-center">
+                {console.log(loadedRecipes)}
+                <Button isLoading={isLoading} onClick={initRecipes}>Start Browsing Recipies</Button>
+                {loadedRecipes.length > 0 && loadedRecipes.map(recipe =>
+                    <TinderCard className="max-w-lg mt-4 absolute top-52" key={recipe.id} onCardLeftScreen={(id) => onCardLeftScreen(id)}>
                         <Card className="p-4">
                             <CardBody>
                                 <div>
@@ -61,8 +88,8 @@ export default function RandomRecipe() {
                             </CardBody>
                         </Card>
                     </TinderCard>
-                </div>
-            )}
+                )}
+            </div>
         </DefaultLayout>
     );
 }
